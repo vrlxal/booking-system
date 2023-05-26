@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useEffect } from 'react';
 import './AvailabilityTable.css'; // Import your CSS file
 
 const AvailabilityTable = forwardRef((props, ref) => {
@@ -8,6 +8,24 @@ const AvailabilityTable = forwardRef((props, ref) => {
   const currentDayOfWeek = currentDate.getDay();
   const daysUntilMonday = (currentDayOfWeek + 6) % 7; // Days between current day and next Monday
 
+  useEffect(() => {
+    const headers = new Headers();
+    headers.append("Content-Type", "application/json");
+
+    const requestOptions = {
+      method: "GET",
+      headers: headers,
+    }
+
+    fetch(`http://localhost:8080/`, requestOptions)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Data:", data);
+      })
+      .catch(err => {
+        console.log(err);
+      })
+  })
 
   return (
     <table className="availability-table">

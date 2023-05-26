@@ -23,7 +23,7 @@ function Homepage(props) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    addBooking(name, date, unitNumber, startTime, endTime, purpose);
+    addBooking(name, date, unitNumber, startTime, endTime, purpose);  
   }
 
   const addBooking = (newName, newDate, newUnitNumber, newStartTime, newEndTime, newPurpose) => {
@@ -61,7 +61,7 @@ function Homepage(props) {
 
   return (
     <Fragment>
-      <div className='bookings-container' style={{ margin: '15px' }}>
+      <div style={{ margin: '15px' }}>
         <h3>Bookings</h3>
         <ul className='list-group'>
           {bookings.map((m) => (
@@ -131,7 +131,7 @@ function Homepage(props) {
         >
         </Input>
 
-        <input type="submit" value="Submit" className="btn btn-primary"></input>
+        <input type="submit" value="Submit" className="btn btn-primary mb-3"></input>
       </form>
     </Fragment>
   )
