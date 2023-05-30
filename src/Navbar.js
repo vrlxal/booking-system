@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-function Navbar({ loggedIn, handleLogin }) {
+function Navbar({ loggedIn, handleLogin, handleRegister }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -15,12 +15,12 @@ function Navbar({ loggedIn, handleLogin }) {
     <nav className="navbar navbar-expand-lg" style={{ backgroundColor: 'teal' }}>
       <div className="container-fluid">
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <img 
-            src={`${process.env.PUBLIC_URL}/orca.png`} 
-            alt="Orca logo" 
+          <img
+            src={`${process.env.PUBLIC_URL}/orca.png`}
+            alt="Orca logo"
             style={{ marginRight: '25px', width: '50px', height: '50px' }}
           />
-          <a className="navbar-brand" style={{ fontSize: '30px', fontWeight: 'bold' }}>Book4U</a>
+          <a href="/" className="navbar-brand" style={{ fontSize: '30px', fontWeight: 'bold' }}>Book4U</a>
         </div>
         <form className="d-flex" role="search" onSubmit={handleSubmit}>
           <input
@@ -42,7 +42,7 @@ function Navbar({ loggedIn, handleLogin }) {
           <button className="btn btn-outline-info me-2" type="button" onClick={handleSubmit}>
             Login
           </button>
-          <button className="btn btn-outline-info" type="submit">
+          <button className="btn btn-outline-info" type="button" onClick={handleRegister}>
             Register
           </button>
         </form>

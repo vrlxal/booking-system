@@ -3,6 +3,7 @@ import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Homepage from './Homepage';
 import Navbar from './Navbar';
 import BookingManagement from './BookingManagement';
+import RegisterPage from './Register';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -28,15 +29,23 @@ function App() {
     }
   };
 
+  const handleRegister = () => {
+    navigate('/register');
+  };
+
   return (
     <div>
-      <Navbar loggedIn={loggedIn} handleLogin={handleLogin} />
+      <Navbar loggedIn={loggedIn} handleLogin={handleLogin} handleRegister={handleRegister}/> {/* props expect function, can't directly navigate*/}
       <div className="container">
         <Routes>
           <Route path="/" element={<Homepage />} />
           <Route
             path="/booking-management"
             element={loggedIn ? <BookingManagement /> : <Navigate to="/" replace />}
+          />
+          <Route
+            path="/register"
+            element={<RegisterPage />}
           />
         </Routes>
       </div>

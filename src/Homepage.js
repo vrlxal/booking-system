@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react';
-import TimePicker from './Timepicker';
 import AvailabilityTable from './AvailabilityTable';
 import Input from './Input';
+import BookingForm from './BookingForm';
 
 // functional component (instead of using the  traditional class method)
 function Homepage(props) {
@@ -13,13 +13,6 @@ function Homepage(props) {
   const [endTime, setEndTime] = useState("")
   const [purpose, setPurpose] = useState("")
 
-  // refs
-  const nameRef = useRef(null);
-  const dateRef = useRef(null);
-  const unitNumberRef = useRef(null);
-  const startTimeRef = useRef(null);
-  const endTimeRef = useRef(null);
-  const purposeRef = useRef(null);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -47,12 +40,6 @@ function Homepage(props) {
     setEndTime('');
     setPurpose('');
 
-    nameRef.current.value = "";
-    dateRef.current.value = "";
-    unitNumberRef.current.value = "";
-    startTimeRef.current.value = "";
-    endTimeRef.current.value = "";
-    purposeRef.current.value = "";
   }
 
   useEffect(() => {
@@ -71,68 +58,7 @@ function Homepage(props) {
       </div>
       <AvailabilityTable></AvailabilityTable>
       <hr />
-      <form autoComplete='off' onSubmit={handleSubmit}>
-        <Input
-          title="Name"
-          type="text"
-          id="name"
-          autoComplete="name"
-          ref={nameRef}
-          onChange={(event) => setName(event.target.value)}
-        >
-        </Input>
-
-        <Input
-          title="Date of requested booking"
-          type="date"
-          id="date"
-          autoComplete="date"
-          ref={dateRef}
-          onChange={(event) => setDate(event.target.value)}
-        >
-        </Input>
-
-        <Input
-          title="Unit Number"
-          type="text"
-          id="unit-number"
-          autoComplete="unit-number"
-          ref={unitNumberRef}
-          onChange={(event) => setUnitNumber(event.target.value)}
-        >
-        </Input>
-
-        <TimePicker
-          title="Start Time"
-          id="start-time"
-          ref={startTimeRef}
-          onChange={(date) => {
-            console.log("Start time: ", date)
-            setStartTime(date.$H)
-          }}
-        />
-
-        <TimePicker
-          title="End Time"
-          id="end-time"
-          ref={endTimeRef}
-          onChange={(date) => {
-            setEndTime(date.$H)
-          }}
-        />
-
-        <Input
-          title="Purpose"
-          type="text"
-          id="purpose"
-          autoComplete="purpose"
-          ref={purposeRef}
-          onChange={(event) => setPurpose(event.target.value)}
-        >
-        </Input>
-
-        <input type="submit" value="Submit" className="btn btn-primary mb-3"></input>
-      </form>
+      <BookingForm handleSubmit={handleSubmit}></BookingForm>
     </Fragment>
   )
 }
