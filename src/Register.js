@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import Input from "./Input";
+import Input from "./FormInput";
 import { Button } from "@mui/material";
 
 const RegisterPage = () => {

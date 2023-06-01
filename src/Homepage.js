@@ -1,22 +1,13 @@
-import React, { Fragment, useEffect, useRef, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import AvailabilityTable from './AvailabilityTable';
-import Input from './Input';
 import BookingForm from './BookingForm';
 
 // functional component (instead of using the  traditional class method)
 function Homepage(props) {
-  const [bookings, setBookings] = useState([])
-  const [name, setName] = useState("")
-  const [date, setDate] = useState("")
-  const [unitNumber, setUnitNumber] = useState("")
-  const [startTime, setStartTime] = useState("")
-  const [endTime, setEndTime] = useState("")
-  const [purpose, setPurpose] = useState("")
+  const [bookings, setBookings] = useState([]);
 
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    addBooking(name, date, unitNumber, startTime, endTime, purpose);  
+  const handleSubmit = (formValues) => {
+    addBooking(formValues.name, formValues.date, formValues.unitNumber, formValues.startTime, formValues.endTime, formValues.purpose);  
   }
 
   const addBooking = (newName, newDate, newUnitNumber, newStartTime, newEndTime, newPurpose) => {
@@ -33,13 +24,6 @@ function Homepage(props) {
     const newList = bookings.concat(newBooking);
 
     setBookings(newList);
-    setName('');
-    setDate('');
-    setUnitNumber('');
-    setStartTime('');
-    setEndTime('');
-    setPurpose('');
-
   }
 
   useEffect(() => {
