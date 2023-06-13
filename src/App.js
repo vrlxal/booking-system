@@ -11,9 +11,11 @@ function App() {
   const [tickInterval, setTickInterval] = useState();
 
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   const handleLogin = (jwtToken) => {
     setJwtToken(jwtToken);
+    console.log("JWT TOKEN from login: ", jwtToken)
     toggleRefresh(true); // start refresh token countdown
     navigate('/booking-management');
   };
@@ -42,7 +44,7 @@ function App() {
   const toggleRefresh = useCallback((status) => {
     if (status) {
       let i = setInterval(() => {
-        console.log("Runs every second");
+        console.log("Runs every 10 mins");
         const requestOptions = {
           method: "GET",
           credentials: "include",
@@ -50,7 +52,6 @@ function App() {
 
         fetch('/refresh', requestOptions)
           .then((response) => {
-            console.log(response);
             return response.json();
           })
           .then((data) => {
@@ -61,9 +62,8 @@ function App() {
           .catch(error => {
             console.log("User is not logged in ", error);
           })
-      }, 60000);
+      }, 600000); // every 10 mins
       setTickInterval(i);
-      console.log("Setting tick interval to: ", i);
     } else {
       console.log("Turning off tick interval", tickInterval);
       setTickInterval(null);
@@ -80,36 +80,40 @@ function App() {
 
       fetch('/refresh', requestOptions)
         .then((response) => {
-          console.log(response);
           return response.json();
         })
         .then((data) => {
           if (data.access_token) {
             setJwtToken(data.access_token);
+            console.log("ACCESS TOKEN ON RE-RENDER:", data.access_token)
+            setLoading(false);
             toggleRefresh(true); // start refresh token countdown
           }
         })
         .catch(error => {
           console.log("User is not logged in ", error);
+          setLoading(false);
         })
     }
   }, [jwtToken, toggleRefresh])
 
-
   return (
     <div>
       <Navbar handleLogin={handleLogin} handleRegister={handleRegister} handleLogout={handleLogout} jwtToken={jwtToken} /> {/* props expect function, can't directly navigate*/}
-      <a className="btn btn-outline-secondary" href="#!" onClick={toggleRefresh}>Toggle clicking</a>
       <div className="container">
         <Routes>
-          <Route path="/" element={<Homepage />} />
+          <Route path="/" element={<Homepage jwtToken={jwtToken} />} />
           <Route
             path="/booking-management"
-            element={jwtToken !== "" ? <BookingManagement /> : <Navigate to="/" replace />}
+            element={loading
+              ? <div>Loading...</div> // Show a loading screen while fetching the token
+              : jwtToken !== ""
+                ? <BookingManagement jwtToken={jwtToken} />
+                : <Navigate to="/" replace />}
           />
           <Route
             path="/register"
-            element={<RegisterPage />}
+            element={<RegisterPage handleLogin={handleLogin} />}
           />
         </Routes>
       </div>

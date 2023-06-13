@@ -1,22 +1,48 @@
-import React, { useRef } from "react";
+import React, { useState } from "react";
 import Input from "./FormInput";
 import { Button } from "@mui/material";
 
-const RegisterPage = () => {
-  const usernameRef = useRef();
-  const passwordRef = useRef();
+const RegisterPage = ({handleLogin}) => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSubmit = (event) => {
-    event.preventDefault();
+    event.preventDefault(); // Prevent form submission
 
-    // You might want to implement your own validation logic here
-    const username = usernameRef.current.value;
-    const password = passwordRef.current.value;
+    if (username === "" || password === "") {
+      alert('Please enter both username and password');
+    }
 
-    console.log("Username: ", username);
-    console.log("Password: ", password);
+    // build request payload
+    let payload = {
+      username: username,
+      password: password,
+    }
 
-    // Then send username and password to your backend to register the user...
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      credentials: "include",
+      body: JSON.stringify(payload),
+    }
+
+
+    fetch("/register", requestOptions)
+      .then((response) => {
+        return response.json()
+      })
+      .then((data) => {
+        if (data.error) {
+          alert('Invalid username or password');
+        } else {
+          handleLogin(data.access_token);
+        }
+      })
+      .catch(error => {
+        alert(error);
+      })
   };
 
   return (
@@ -28,7 +54,7 @@ const RegisterPage = () => {
           type="text"
           name="username"
           id="username"
-          ref={usernameRef}
+          onChange={(event) => setUsername(event.target.value)}
           autoComplete="username"
         />
         <Input
@@ -36,7 +62,7 @@ const RegisterPage = () => {
           type="password"
           name="password"
           id="password"
-          ref={passwordRef}
+          onChange={(event) => setPassword(event.target.value)}
           autoComplete="new-password"
         />
         <Button type="submit" variant="contained" color="primary">

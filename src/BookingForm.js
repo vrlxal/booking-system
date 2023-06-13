@@ -41,19 +41,19 @@ const BookingForm = ({ handleSubmit }) => {
     });
 
     const handleChange = (e, field) => {
-        const value = e.target.value;
-        setFormValues({
-            ...formValues,
-            [field]: {
-                ...formValues[field],
-                value: value,
-                error: value ? false : true,
-            }
-        });
-    };
-
-    const handleTimeChange = (e, field) => {
-        const value = e;
+        let value;
+        if (field === "startTime" || field === "endTime") {
+            let date = new Date(e.$d);
+            let isoDate = date.toISOString();
+            let formattedDate = isoDate.slice(0, -5) + 'Z';
+            console.log("DATE: ", formattedDate);
+            value = formattedDate;
+        } else if (field === "date") {
+            value = e.format('YYYY-MM-DDTHH:mm:ssZ');
+        } else {
+            value = e.target.value;
+        }
+        console.log("value: ", value)
         setFormValues({
             ...formValues,
             [field]: {
@@ -81,7 +81,6 @@ const BookingForm = ({ handleSubmit }) => {
         if (!isError) {
             handleSubmit(formValues.name.value, formValues.date.value,
                 formValues.unitNumber.value, formValues.startTime.value, formValues.endTime.value, formValues.purpose.value);
-            console.log("Form values:", formValues)
         }
     };
 
@@ -130,7 +129,7 @@ const BookingForm = ({ handleSubmit }) => {
                 value={formValues.startTime.value}
                 error={formValues.startTime.error}
                 errorMessage={formValues.startTime.errorMessage}
-                onChange={(e) => handleTimeChange(e.$H, 'startTime')}
+                onChange={(e) => handleChange(e, 'startTime')}
             />
 
             <TimePicker
@@ -139,7 +138,7 @@ const BookingForm = ({ handleSubmit }) => {
                 value={formValues.endTime.value}
                 error={formValues.endTime.error}
                 errorMessage={formValues.endTime.errorMessage}
-                onChange={(e) => handleTimeChange(e.$H, 'endTime')}
+                onChange={(e) => handleChange(e, 'endTime')}
             />
 
             <FormInput

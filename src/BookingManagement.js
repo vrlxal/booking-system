@@ -1,7 +1,36 @@
-import React, { Fragment } from 'react';
+import { Fragment, useEffect, useState } from "react";
+import { Link, useNavigate, useOutletContext } from "react-router-dom";
 
-function BookingManagement() {
-  const bookings = [];
+const BookingManagement = ({ jwtToken }) => {
+  const [bookings, setBookings] = useState([]);
+  // const { jwtToken } = useOutletContext(); // from App()
+  const navigate = useNavigate();
+
+  // Hook
+  useEffect(() => {
+    if (jwtToken === "") {
+      console.log("NO JWT TOKEN")
+      navigate("/");
+      return
+    }
+    const headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    headers.append("Authorization", "Bearer " + jwtToken);
+
+    const requestOptions = {
+      method: "GET",
+      headers: headers,
+    }
+
+    fetch(`/admin/booking-management`, requestOptions)
+      .then((response) => response.json())
+      .then((data) => {
+        setBookings(data);
+      })
+      .catch(err => {
+        console.log(err);
+      })
+  }, [jwtToken, navigate])
 
   return (
     <Fragment>
@@ -18,7 +47,7 @@ function BookingManagement() {
             </tr>
           </thead>
           <tbody>
-            {bookings.map((booking, index) => (
+            {/* {bookings.map((booking, index) => (
               <tr key={index}>
                 <td>{booking.name}</td>
                 <td>{booking.date}</td>
@@ -26,7 +55,7 @@ function BookingManagement() {
                 <td>{booking.startTime}</td>
                 <td>{booking.endTime}</td>
               </tr>
-            ))}
+            ))} */}
           </tbody>
         </table>
       </div>
