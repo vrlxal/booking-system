@@ -1,119 +1,63 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState, useMemo, createContext, useContext } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Homepage from './Homepage';
 import Navbar from './Navbar';
 import BookingManagement from './BookingManagement';
 import RegisterPage from './Register';
+import MyComponent from './Test';
+
+// Created context
+export const UserContext = createContext();
+
+// That component separates user context from app, so we don't pollute it
+function UserContextProvider({ children }) {
+  const [username, setUsername] = useState("");
+  const [jwtToken, setJwtToken] = useState("");
+  const [isLoading, setLoading] = useState(true);
+
+  // We want to remember value reference, otherwise we will have unnecessary rerenders
+  const value = useMemo(() => {
+    return {
+      username,
+      setUsername,
+      jwtToken,
+      setJwtToken,
+      isLoading,
+      setLoading,
+    };
+  }, [username, setUsername, jwtToken, setJwtToken, isLoading, setLoading]);
+
+  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
+}
 
 function App() {
-  const [jwtToken, setJwtToken] = useState("");
-
-  const [tickInterval, setTickInterval] = useState();
-
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
-
-  const handleLogin = (jwtToken) => {
-    setJwtToken(jwtToken);
-    console.log("JWT TOKEN from login: ", jwtToken)
-    toggleRefresh(true); // start refresh token countdown
-    navigate('/booking-management');
-  };
-
-  const handleRegister = () => {
-    navigate('/register');
-  };
-
-  const handleLogout = () => {
-    const requestOptions = {
-      method: "GET",
-      credentials: "include",
-    }
-
-    fetch('/logout', requestOptions)
-      .catch(error => {
-        console.log("Error logging out", error);
-      })
-      .finally(() => {
-        setJwtToken("");
-        toggleRefresh(false); // stop refresh token countdown
-      })
-    navigate('/');
-  };
-
-  const toggleRefresh = useCallback((status) => {
-    if (status) {
-      let i = setInterval(() => {
-        console.log("Runs every 10 mins");
-        const requestOptions = {
-          method: "GET",
-          credentials: "include",
-        }
-
-        fetch('/refresh', requestOptions)
-          .then((response) => {
-            return response.json();
-          })
-          .then((data) => {
-            if (data.access_token) {
-              setJwtToken(data.access_token);
-            }
-          })
-          .catch(error => {
-            console.log("User is not logged in ", error);
-          })
-      }, 600000); // every 10 mins
-      setTickInterval(i);
-    } else {
-      console.log("Turning off tick interval", tickInterval);
-      setTickInterval(null);
-      clearInterval(tickInterval);
-    }
-  }, [tickInterval])
-
+  const { jwtToken, isLoading } = useContext(UserContext);
   useEffect(() => {
-    if (jwtToken === "") {
-      const requestOptions = {
-        method: "GET",
-        credentials: "include",
-      }
-
-      fetch('/refresh', requestOptions)
-        .then((response) => {
-          return response.json();
-        })
-        .then((data) => {
-          if (data.access_token) {
-            setJwtToken(data.access_token);
-            console.log("ACCESS TOKEN ON RE-RENDER:", data.access_token)
-            setLoading(false);
-            toggleRefresh(true); // start refresh token countdown
-          }
-        })
-        .catch(error => {
-          console.log("User is not logged in ", error);
-          setLoading(false);
-        })
-    }
-  }, [jwtToken, toggleRefresh])
+    console.log("App is loading: ", isLoading)
+    console.log("JWT token: ", jwtToken)
+  }, [isLoading])
 
   return (
     <div>
-      <Navbar handleLogin={handleLogin} handleRegister={handleRegister} handleLogout={handleLogout} jwtToken={jwtToken} /> {/* props expect function, can't directly navigate*/}
+      <Navbar />
       <div className="container">
         <Routes>
-          <Route path="/" element={<Homepage jwtToken={jwtToken} />} />
+          <Route path="/" element={<Homepage />} />
           <Route
             path="/booking-management"
-            element={loading
+            element={isLoading
               ? <div>Loading...</div> // Show a loading screen while fetching the token
               : jwtToken !== ""
-                ? <BookingManagement jwtToken={jwtToken} />
+                ? <BookingManagement />
                 : <Navigate to="/" replace />}
           />
           <Route
             path="/register"
-            element={<RegisterPage handleLogin={handleLogin} />}
+            element={<RegisterPage />}
+          />
+          <Route
+            path="/test"
+            element={<MyComponent />}
           />
         </Routes>
       </div>
@@ -121,4 +65,13 @@ function App() {
   );
 }
 
-export default App;
+// wrap App inside UserContextProvider
+function AppWrapper() {
+  return (
+    <UserContextProvider>
+      <App />
+    </UserContextProvider>
+  );
+}
+
+export default AppWrapper;

@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
-import App from './App';
+import AppWrapper from './App';
 
 ReactDOM.render(
   <BrowserRouter>
     <React.StrictMode>
-      <App />
+      <AppWrapper />
     </React.StrictMode>
   </BrowserRouter>,
   document.getElementById('root')

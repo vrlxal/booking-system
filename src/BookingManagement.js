@@ -1,9 +1,11 @@
-import { Fragment, useEffect, useState } from "react";
-import { Link, useNavigate, useOutletContext } from "react-router-dom";
+import { Fragment, useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from './App';
 
-const BookingManagement = ({ jwtToken }) => {
+const BookingManagement = () => {
   const [bookings, setBookings] = useState([]);
-  // const { jwtToken } = useOutletContext(); // from App()
+  const { jwtToken, username } = useContext(UserContext);
+
   const navigate = useNavigate();
 
   // Hook
@@ -16,6 +18,7 @@ const BookingManagement = ({ jwtToken }) => {
     const headers = new Headers();
     headers.append("Content-Type", "application/json");
     headers.append("Authorization", "Bearer " + jwtToken);
+    headers.append("Username", username);
 
     const requestOptions = {
       method: "GET",
@@ -26,6 +29,8 @@ const BookingManagement = ({ jwtToken }) => {
       .then((response) => response.json())
       .then((data) => {
         setBookings(data);
+
+        console.log("Bookings: ", data);
       })
       .catch(err => {
         console.log(err);
@@ -39,23 +44,50 @@ const BookingManagement = ({ jwtToken }) => {
         <table className='table'>
           <thead>
             <tr>
+              <th>Username</th>
               <th>Name</th>
-              <th>Date of Request</th>
               <th>Unit</th>
+              <th>Start Date</th>
               <th>Start Time</th>
+              <th>End Date</th>
               <th>End Time</th>
+              <th>Facility</th>
+              <th>Purpose</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
-            {/* {bookings.map((booking, index) => (
-              <tr key={index}>
-                <td>{booking.name}</td>
-                <td>{booking.date}</td>
-                <td>{booking.unit}</td>
-                <td>{booking.startTime}</td>
-                <td>{booking.endTime}</td>
-              </tr>
-            ))} */}
+            {
+              bookings ? bookings.map((booking, index) => (
+                <tr key={index}>
+                  <td>{booking.username}</td>
+                  <td>{booking.name}</td>
+                  <td>{booking.unit_number}</td>
+                  <td>{new Date(booking.start_date).toLocaleDateString('en-GB', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                  })}</td>
+                  <td>{new Date(booking.start_time).toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                  })}</td>
+                  <td>{new Date(booking.end_date).toLocaleDateString('en-GB', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                  })}</td>
+                  <td>{new Date(booking.end_time).toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                  })}</td>
+                  <td>{booking.facility}</td>
+                  <td>{booking.purpose}</td>
+                </tr>
+              )) : null
+            }
           </tbody>
         </table>
       </div>
